@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 
 let mvx = 0;
-let mvy = 0;
-let d = 1000
-let v = 100
-let camp = 9
+let mvy = 0; // movimentos do mouse
+let d = 1000 // distancia
+let v = 100  // ajuste de velocidade geral
+let camp = 6 // posição da camera
 let r2 = new THREE.Vector3(0,0,0)
-let r3 = new THREE.Vector3(0,1,0)
-let ppositions = [0,(1/56)*d,(1/47)*d,(1/38)*d,(1/32)*d,(1/8)*d,(1/4)*d,(1/2)*d,(3/4)*d,0]
-let psize = [10,.2,.6,.6,.3,6.9,5.8,2.5,2.4,100]
+let r3 = new THREE.Vector3(0,1,0) // eixos para calculo de rotação
+let ppositions = [0,(1/56)*d,(1/47)*d,(1/38)*d,(1/32)*d,(1/8)*d,(1/4)*d,(1/2)*d,(3/4)*d,0] // posições dos planetas
+let psize = [10,.2,.6,.6,.3,6.9,5.8,2.5,2.4,100] // tamanho dos planetas
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer();
@@ -17,9 +17,6 @@ const pivot = new THREE.Object3D()
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 2500 );
 pivot.add(camera)
 scene.add(pivot)
-
-pivot.position.x = ppositions[camp]
-camera.position.z = psize[camp] + psize[camp]*1.5
 
 const spotLight = new THREE.AmbientLight( 0xffffff ,.5);
 spotLight.position.set( 10, 0, 0 );
@@ -121,16 +118,14 @@ const sun = new THREE.Mesh( geometrysun, materialsun );
 scene.add( sun );
 sun.position.x = ppositions[0]
 
-let planets = [sun,mercury,venus_surface,earth,mars,jupiter,saturn,neptune,uranus,sun]
-
 const geometrym = new THREE.SphereGeometry(.1,5,5);
 const texturem = new THREE.TextureLoader().load( "2k_moon.png" );
+texturem.magFilter = THREE.NearestFilter
 const materialm = new THREE.MeshStandardMaterial({map:texturem});
 const moon = new THREE.Mesh( geometrym, materialm );
 moon.position.x = 4
 scene.add( moon );
 
-// skybox
 const geometrys = new THREE.SphereGeometry(-2000,4,4);
 const textures = new THREE.TextureLoader().load( "textures/2k_stars_milky_way.jpg" );
 const materials = new THREE.MeshStandardMaterial({map:textures,lightMap:textures,lightMapIntensity:5});
@@ -139,7 +134,12 @@ scene.add( stars );
 
 document.body.appendChild( renderer.domElement );
 
+let planets = [sun,mercury,venus_surface,earth,mars,jupiter,saturn,neptune,uranus,sun]
+
 renderer.setSize( window.innerWidth, window.innerHeight );
+
+pivot.position.x = ppositions[camp]
+camera.position.z = psize[camp] + psize[camp]*1.5
 
 addEventListener("resize",(event) => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -166,33 +166,30 @@ function lerp(a, b, alpha) {
 function rotateAboutPoint(obj, point, axis, theta, pointIsWorld = false){
   
     if(pointIsWorld){
-        obj.parent.localToWorld(obj.position); 
+        obj.parent.localToWorld(obj.position); // compensate for world coordinate
     }
   
-    obj.position.sub(point); 
-    obj.position.applyAxisAngle(axis, theta);
-    obj.position.add(point); 
+    obj.position.sub(point); // remove the offset
+    obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+    obj.position.add(point); // re-add the offset
     
     if(pointIsWorld){
-        obj.parent.worldToLocal(obj.position);
+        obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
     }
     
-    obj.rotateOnAxis(axis, theta);
+    obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 }
 
+
 function animate() {
-    rotateAboutPoint(mercury,r2,r3,-.47/v)
-    rotateAboutPoint(venus_surface,r2,r3,-.35/v)
-    rotateAboutPoint(earth,r2,r3,-.29/v)
-    rotateAboutPoint(mars,r2,r3,-.24/v)
-    rotateAboutPoint(jupiter,r2,r3,-.13/v)
-    rotateAboutPoint(saturn,r2,r3,-.09/v)
-    rotateAboutPoint(neptune,r2,r3,-.06/v)
-    rotateAboutPoint(uranus,r2,r3,-.05/v)
-    
-    earth.rotation.y -= 0.005;
-    clouds.rotation.y -= 0.005;
-    texturec.offset.x += 0.0005;
+    rotateAboutPoint(mercury,r2,r3,-.47/v,false)
+    rotateAboutPoint(venus_surface,r2,r3,-.35/v,false)
+    rotateAboutPoint(earth,r2,r3,-.29/v,false)
+    rotateAboutPoint(mars,r2,r3,-.24/v,false)
+    rotateAboutPoint(jupiter,r2,r3,-.13/v,false)
+    rotateAboutPoint(saturn,r2,r3,-.09/v,false)
+    rotateAboutPoint(neptune,r2,r3,-.06/v,false)
+    rotateAboutPoint(uranus,r2,r3,-.05/v,false)
     
     pivot.rotation.y -= mvx * 0.001
     pivot.rotation.x -= mvy * 0.001
@@ -205,5 +202,4 @@ function animate() {
     
     renderer.render( scene, camera );
 }
-
 renderer.setAnimationLoop( animate );

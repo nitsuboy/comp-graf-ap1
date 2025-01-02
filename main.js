@@ -10,28 +10,32 @@ let r3 = new THREE.Vector3(0,1,0) // eixos para calculo de rotação
 let ppositions = [0,(1/56)*d,(1/47)*d,(1/38)*d,(1/32)*d,(1/8)*d,(1/4)*d,(1/2)*d,(3/4)*d,0] // posições dos planetas
 let psize = [10,.2,.6,.6,.3,6.9,5.8,2.5,2.4,100] // tamanho dos planetas
 
-// Logica para cada vez que o usuario apertar espaço, a camera muda de planeta
 addEventListener("keydown", (event) => {
+    // Logica para cada vez que o usuario apertar espaço, a camera muda de planeta
     if (event.code === "Space") {
         camp = (camp + 1)%9
 
         camera.position.z = psize[camp] + (psize[camp]*1.5)
     }
+    //aumentar velocidade
     if (event.code === "ArrowRight") {
         if(v > 10){
             v -= 10
         }
     }
+    // diminuir velocidade
     if (event.code === "ArrowLeft") {
         if(v < 100){
             v += 10
         }
     }
+    // zoom out
     if (event.code === "ArrowUp") {
         if(camera.position.z < 100){
             camera.position.z += .3
         }
     }
+    // zoom in
     if (event.code === "ArrowDown") {
         if(camera.position.z > psize[camp] + (psize[camp]*1.5)){
             camera.position.z -= .3
@@ -39,7 +43,7 @@ addEventListener("keydown", (event) => {
     }
 })
 
-// mudar rederização quando mudar tamanhoi da janela
+// mudar rederização quando mudar tamanho da janela
 addEventListener("resize",(event) => {
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
@@ -55,9 +59,9 @@ addEventListener("mousemove", (event) => {
 })
 
 const scene = new THREE.Scene()
-const renderer = new THREE.WebGLRenderer()
-
+const renderer = new THREE.WebGLRenderer({antialias:true})
 const pivot = new THREE.Object3D()
+
 // Camera deve ficar posicionada apontando pro Sol
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 2500 )
 pivot.add(camera)
@@ -213,7 +217,6 @@ function rotateAboutPoint(obj, point, axis, theta, pointIsWorld = false){
     obj.rotateOnAxis(axis, theta) // rotate the OBJECT
 }
 
-
 function animate() {
     mercury.rotateY(.01)
     venus_surface.rotateY(.01)
@@ -246,4 +249,5 @@ function animate() {
     
     renderer.render( scene, camera )
 }
+
 renderer.setAnimationLoop( animate )

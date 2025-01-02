@@ -4,16 +4,27 @@ let mvx = 0;
 let mvy = 0; // movimentos do mouse
 let d = 1000 // distancia
 let v = 100  // ajuste de velocidade geral
-let camp = 6 // posição da camera
+let camp = 0 // posição da camera -> mudar para o planeta em questão
 let r2 = new THREE.Vector3(0,0,0)
 let r3 = new THREE.Vector3(0,1,0) // eixos para calculo de rotação
 let ppositions = [0,(1/56)*d,(1/47)*d,(1/38)*d,(1/32)*d,(1/8)*d,(1/4)*d,(1/2)*d,(3/4)*d,0] // posições dos planetas
 let psize = [10,.2,.6,.6,.3,6.9,5.8,2.5,2.4,100] // tamanho dos planetas
 
+// Logica para cada vez que o usuario apertar espaço, a camera muda de planeta
+addEventListener("keydown", (event) => {
+    if (event.code === "Space") {
+        camp = camp + 1;
+        if ( camp > ppositions.length() ) {
+            camp = 0;
+        }
+    }
+});
+
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer();
 
 const pivot = new THREE.Object3D()
+// Camera deve ficar posicionada apontando pro Sol
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 2500 );
 pivot.add(camera)
 scene.add(pivot)
@@ -94,6 +105,15 @@ const clouds = new THREE.Mesh( geometryc, materialc );
 earth.add( clouds );
 earth.position.x = ppositions[3]
 
+const geometrym = new THREE.SphereGeometry(.1,5,5);
+const texturem = new THREE.TextureLoader().load( "textures/2k_moon.jpg" );
+texturem.magFilter = THREE.NearestFilter
+const materialm = new THREE.MeshStandardMaterial({map:texturem});
+const moon = new THREE.Mesh( geometrym, materialm );
+moon.position.x = 4
+scene.add( moon );
+earth.add( moon )
+
 // venus
 const geometryvenus_surface = new THREE.SphereGeometry(psize[2]);
 const texturevenus_surface = new THREE.TextureLoader().load( "textures/2k_venus_surface.jpg" );
@@ -118,13 +138,7 @@ const sun = new THREE.Mesh( geometrysun, materialsun );
 scene.add( sun );
 sun.position.x = ppositions[0]
 
-const geometrym = new THREE.SphereGeometry(.1,5,5);
-const texturem = new THREE.TextureLoader().load( "2k_moon.png" );
-texturem.magFilter = THREE.NearestFilter
-const materialm = new THREE.MeshStandardMaterial({map:texturem});
-const moon = new THREE.Mesh( geometrym, materialm );
-moon.position.x = 4
-scene.add( moon );
+
 
 const geometrys = new THREE.SphereGeometry(-2000,4,4);
 const textures = new THREE.TextureLoader().load( "textures/2k_stars_milky_way.jpg" );

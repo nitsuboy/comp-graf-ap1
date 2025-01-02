@@ -14,9 +14,44 @@ let psize = [10,.2,.6,.6,.3,6.9,5.8,2.5,2.4,100] // tamanho dos planetas
 addEventListener("keydown", (event) => {
     if (event.code === "Space") {
         camp = camp + 1;
-        if ( camp > ppositions.length() ) {
+        if ( camp > ppositions.length()) {
             camp = 0;
         }
+    }
+    if (event.code === "ArrowRight") {
+        if(v > 10){
+            v -= 10
+        }
+    }
+    if (event.code === "ArrowLeft") {
+        if(v < 100){
+            v += 10
+        }
+    }
+    if (event.code === "ArrowUp") {
+        if(camera.position.z < 100){
+            camera.position.z += .3
+        }
+    }
+    if (event.code === "ArrowDown") {
+        if(camera.position.z > psize[camp] + (psize[camp]*1.5)){
+            camera.position.z -= .3
+        }
+    }
+});
+
+// mudar rederização quando mudar tamanhoi da janela
+addEventListener("resize",(event) => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+});
+
+// movimento de camera
+addEventListener("mousemove", (event) => {
+    if (event.buttons){
+        mvx = event.movementX;
+        mvy = event.movementY;
     }
 });
 
@@ -138,8 +173,6 @@ const sun = new THREE.Mesh( geometrysun, materialsun );
 scene.add( sun );
 sun.position.x = ppositions[0]
 
-
-
 const geometrys = new THREE.SphereGeometry(-2000,4,4);
 const textures = new THREE.TextureLoader().load( "textures/2k_stars_milky_way.jpg" );
 const materials = new THREE.MeshStandardMaterial({map:textures,lightMap:textures,lightMapIntensity:5});
@@ -154,24 +187,6 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 
 pivot.position.x = ppositions[camp]
 camera.position.z = psize[camp] + psize[camp]*1.5
-
-addEventListener("resize",(event) => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-});
-
-addEventListener("mousemove", (event) => {
-    if (event.buttons){
-        mvx = event.movementX;
-        mvy = event.movementY;
-    }
-});
-
-addEventListener("keypress", (event) => {
-    camp = (camp+1)%10
-    camera.position.z = psize[camp] + psize[camp]*1.5
-});
 
 function lerp(a, b, alpha) {
     return a+alpha*(b-a);

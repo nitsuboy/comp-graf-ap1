@@ -43,6 +43,19 @@ addEventListener("keydown", (event) => {
     }
 })
 
+// Zoom com scroll do mouse
+addEventListener("wheel", (event) => {
+
+    const zoomSpeed = 0.1;
+    const minZoom = psize[camp] + (psize[camp] * 1.5);
+    const maxZoom = 100
+
+    camera.position.z += event.deltaY * 0.01 * zoomSpeed;
+
+    camera.position.z = Math.max(minZoom, Math.min(maxZoom, camera.position.z));
+});
+
+
 // mudar rederização quando mudar tamanho da janela
 addEventListener("resize",(event) => {
     camera.aspect = window.innerWidth / window.innerHeight

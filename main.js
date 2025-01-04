@@ -182,7 +182,7 @@ scene.add( sun )
 sun.position.x = ppositions[0]
 
 const geometrys = new THREE.SphereGeometry(-2000,4,4)
-const textures = new THREE.TextureLoader().load( "textures/2k_stars_milky_way.jpg" )
+const textures = new THREE.TextureLoader().load( "textures/8k_stars_milky_way.jpg" )
 const materials = new THREE.MeshStandardMaterial({map:textures,lightMap:textures,lightMapIntensity:5})
 const stars = new THREE.Mesh( geometrys, materials )
 scene.add( stars )

@@ -1,7 +1,9 @@
 
-# Pixearth
+# solar system visualisation
 
-Simple earth model for my compgraf classes using Three.js. Textures are sourced from [solar textures](https://www.solarsystemscope.com/textures/).
+Textures are sourced from [solar textures](https://www.solarsystemscope.com/textures/).
+
+[video demo](https://youtu.be/U06YCZSvYx0)
 
 ## Features
 - **Planetary system** with textures and realistic scale.
@@ -19,8 +21,8 @@ Simple earth model for my compgraf classes using Three.js. Textures are sourced 
 To use the simulation, simply clone this repository and open the `index.html` file in a browser that supports WebGL (modern browsers like Chrome, Firefox, or Edge).
 
 ```bash
-git clone https://github.com/yourusername/planetary-system-simulation.git
-cd planetary-system-simulation
+git clone https://github.com/nitsuboy/comp-graf-ap1
+cd comp-graf-ap1
 open index.html
 ```
 

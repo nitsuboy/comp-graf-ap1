@@ -13,10 +13,10 @@ let psize = [10, .2, .6, .6, .3, 6.9, 5.8, 2.5, 2.4, 100] // tamanho dos planeta
 // adicionar nome do corpo em foco
 const targetname = document.getElementById("target-name")
 const planetNames = ["Sol", "Mercúrio", "Vênus", "Terra", "Marte", "Júpiter", "Saturno", "Urano", "Netuno"];
-targetname.textContent = planetNames[0]
 const updateTargetName = () => {
     targetname.textContent = planetNames[camp]
 };
+targetname.textContent = planetNames[0]
 
 
 addEventListener("keydown", (event) => {
@@ -64,7 +64,6 @@ addEventListener("wheel", (event) => {
     camera.position.z = Math.max(minZoom, Math.min(maxZoom, camera.position.z));
 });
 
-
 // mudar rederização quando mudar tamanho da janela
 addEventListener("resize", (event) => {
     camera.aspect = window.innerWidth / window.innerHeight
@@ -80,14 +79,32 @@ addEventListener("mousemove", (event) => {
     }
 })
 
+// movimento de camera
+// listen any touch event
+document.addEventListener('touchstart', handleTouchEvent, true);
+document.addEventListener('touchmove', handleTouchEvent, true);
+document.addEventListener('touchend', handleTouchEvent, true);
+document.addEventListener('touchcancel', handleTouchEvent, true);
+
+// will adjust ship's x to latest touch
+function handleTouchEvent(e) {
+    if (e.touches.length === 0 ) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var touch = e.touches[0];
+    mvx = touch.pageX/10
+}
+
 const scene = new THREE.Scene()
 const renderer = new THREE.WebGLRenderer({ antialias: true })
-const pivot = new THREE.Object3D()
+const pivotx = new THREE.Object3D()
+const pivoty = new THREE.Object3D()
 
 // Camera deve ficar posicionada apontando pro Sol
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2500)
-pivot.add(camera)
-scene.add(pivot)
+pivotx.add(pivoty)
+pivoty.add(camera)
+scene.add(pivotx)
 
 const spotLight = new THREE.PointLight(0xffffff, 10, 0, .5)
 spotLight.position.set(0, 0, 0)
@@ -215,7 +232,7 @@ let planets = [sun, mercury, venus_surface, earth, mars, jupiter, saturn, neptun
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 
-pivot.position.x = ppositions[camp]
+pivotx.position.x = ppositions[camp]
 camera.position.z = psize[camp] + psize[camp] * 1.5
 
 function lerp(a, b, alpha) {
@@ -260,10 +277,21 @@ function animate() {
     rotateAboutPoint(neptune, r2, r3, -.06 / v, false)
     rotateAboutPoint(uranus, r2, r3, -.05 / v, false)
 
-    pivot.rotation.y -= mvx * 0.001
-    pivot.rotation.x -= mvy * 0.001
+    pivotx.rotateY(-mvx * 0.001) 
+    pivoty.rotateX(-mvy * 0.001)
+    if (pivoty.rotation.x > 1.5)
+    {
+        pivoty.rotation.x = 1.5
+        mvy = 0
+    }
+    if (pivoty.rotation.x < -1.5)
+    {
+        pivoty.rotation.x = -1.5
+        mvy = 0
+    }
 
-    pivot.position.set(planets[camp].position.x, planets[camp].position.y, planets[camp].position.z)
+
+    pivotx.position.set(planets[camp].position.x, planets[camp].position.y, planets[camp].position.z)
     camera.lookAt(planets[camp].position)
 
     mvx = lerp(mvx, 0, .1)
